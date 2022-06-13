@@ -8,4 +8,39 @@ bluetoothButton.addEventListener("click", () => {
     filters: [{ services: [0xFFE0] }]
   })
 })
+windowNavigator.bluetooth.requestDevice({
+  filters: [{ services: [0xFFE0] }]
+})
+.then(function(device) {
+  getDevice(device)
+  return device.gatt.connect();
+})
+.then(function(server) {
+  return server.getPrimaryService(0xFFE0);
+})
+.then(function(service) {
+  return service.getCharacteristic(0xFFE1);
+})
+.then(function(characteristic) {
+  getCharacteristic(characteristic);
+})
+.catch(function(error) {
+  console.error('Connection failed!', error);
+});
+function getDevice(device) {
+  device.addEventListener('gattserverdisconnected', () => {
+    alert("디바이스 연결이 끊어졌습니다.");
+  });
+}
+function getCharacteristic(characteristic) {
+  characteristic.writeValue(new Uint8Array([0x04, 0x03, 0x02, 0x01]))
+}
+function getCharacteristic(characteristic) {
+  characteristic.startNotifications().then(() => {
+    characteristic.addEventListener('characteristicvaluechanged', function(e) {
+      const value = e.target.value.getUint8(0).toString(10);
+      console.log(value);
+    });
+  })
+}
 </script>
