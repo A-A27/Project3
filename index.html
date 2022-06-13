@@ -1,0 +1,11 @@
+<button id="bluetoothButton">블루투스!</button>
+
+<script>
+const bluetoothButton = document.getElementById("bluetoothButton")
+
+bluetoothButton.addEventListener("click", () => {
+  navigator.bluetooth.requestDevice({
+    filters: [{ services: [0xFFE0] }]
+  })
+})
+</script>
